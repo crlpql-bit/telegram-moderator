@@ -1,0 +1,13 @@
+{
+  "name": "telegram-moderator",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.15.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "dotenv": "^16.0.0"
+  }
+}
