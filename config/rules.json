@@ -1,6 +1,6 @@
 {
   "monitoredGroups": [],
-  "adminIds": [296928374],
+  "adminIds": [],
   "language": "italiano",
   "maxWarnings": 3,
   "actionOnMaxWarnings": "mute",
