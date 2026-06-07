@@ -4,192 +4,74 @@
 
   "language": "italiano",
 
-  "maxWarnings": 100,
+  "maxWarnings": 3,
   "actionOnMaxWarnings": "mute",
   "muteDurationMinutes": 30,
 
-  "deleteViolations": true,
+  "deleteViolations": false,
 
   "rules": [
     "Nessun attacco personale diretto con intento offensivo",
     "Nessun contenuto razzista, sessista o discriminatorio",
     "Nessuno spam o autopromozione non autorizzata",
-    "Nessun link malevolo o truffaldino",
+    "Nessun link malevolo, phishing o truffe",
     "Rispetto tra utenti obbligatorio",
-    "Rimanere pertinenti al tema della discussione",
+    "Rimanere pertinenti all’argomento della discussione",
     "Vietate molestie ripetute o bullismo mirato",
-    "No condivisione dati personali altrui",
+    "Non pubblicare dati personali di terzi",
     "No contenuti illegali o pericolosi"
   ],
 
-  "moderationFeatures": {
-    "contextAnalysis": true,
-    "conversationWindowSize": 30,
+  "moderationMode": "contextual",
 
-    "antiSpam": true,
-    "antiFlood": true,
-    "antiTrolling": true,
-    "toxicityDetection": true,
-    "hateSpeechDetection": true,
-    "personalDataProtection": true,
-    "linkReputationCheck": true,
-    "fakeNewsDetection": true,
-
-    "threadTracking": true,
-    "userInteractionGraph": true,
-    "conflictPairDetection": true,
-    "escalationDetection": true
+  "contextSettings": {
+    "enabled": true,
+    "windowSizeMessages": 20,
+    "requireContextForAction": true
   },
 
-  "conversationGraph": {
-    "enabled": true,
-    "trackUserPairs": true,
-    "trackReplyChains": true,
-    "trackQuoteReferences": true,
-    "interactionDecayMinutes": 60,
+  "allowedColloquialLanguage": true,
 
-    "conflictMemory": {
-      "enabled": true,
-      "memoryWindowMessages": 200,
-      "escalationHistoryTracking": true
+  "toxicityHandling": {
+    "enabled": true,
+    "useSeverityScore": true,
+    "thresholds": {
+      "warning": 60,
+      "delete": 80,
+      "mute": 90,
+      "ban": 97
     }
   },
 
-  "conflictEscalationEngine": {
+  "spamProtection": {
     "enabled": true,
-    "states": [
-      "neutral",
-      "discussion",
-      "heated_discussion",
-      "flame_risk",
-      "active_conflict"
-    ],
-
-    "transitionRules": {
-      "discussion_to_heated": "repeated disagreement + negative tone",
-      "heated_to_flame_risk": "insults or sarcasm + repetition",
-      "flame_risk_to_active_conflict": "direct insults between same two users",
-      "downgrade_on_cooldown": true
-    },
-
-    "actionsByState": {
-      "neutral": "none",
-      "discussion": "none",
-      "heated_discussion": "soft_warning",
-      "flame_risk": "warning + de_escalation_message",
-      "active_conflict": "warning_or_mute + notify_admin"
-    }
-  },
-
-  "contextualModeration": {
-    "enabled": true,
-
-    "requireContextForAction": true,
-    "tolerateLightProfanity": true,
-
-    "allowedColloquialExpressions": [
-      "ma che cazzo dici",
-      "che cazzo vuoi dire",
-      "non ha senso quello che dici",
-      "sei serio?"
-    ],
-
-    "rules": [
-      "Non prendere decisioni da singoli messaggi isolati",
-      "Valuta sempre la conversazione tra utenti specifici",
-      "Identifica se esiste un conflitto bidirezionale o solo sfogo unilaterale",
-      "Intervieni solo se esiste escalation tra due utenti o gruppo",
-      "Non punire linguaggio emotivo non diretto",
-      "Considera contesto sociale del messaggio",
-      "Privilegia sempre la de-escalation prima della punizione"
-    ]
-  },
-
-  "floodProtection": {
-    "enabled": true,
-    "maxMessagesPerMinute": 10,
-    "maxRepeatedMessages": 3
-  },
-
-  "spamDetection": {
-    "enabled": true,
-    "duplicateMessageThreshold": 3,
     "maxLinksPerMessage": 3,
     "maxMentionsPerMessage": 5
   },
 
-  "toxicityThresholds": {
-    "warning": 65,
-    "delete": 80,
-    "mute": 90,
-    "ban": 97
-  },
-
-  "userReputation": {
+  "floodProtection": {
     "enabled": true,
-    "startingScore": 100,
-    "warningPenalty": 10,
-    "mutePenalty": 25,
-    "banPenalty": 100,
-    "positiveParticipationBonus": 2
-  },
-
-  "deEscalation": {
-    "enabled": true,
-    "preferWarningOverMute": true,
-    "beforeAction": true,
-    "maxSuggestionsPerDay": 5
-  },
-
-  "emotionalAnalysis": {
-    "enabled": true,
-    "detectFrustration": true,
-    "detectAnger": true,
-    "detectEscalation": true,
-    "trackPairEmotionDynamics": true,
-    "suggestCalmingResponses": true
-  },
-
-  "automaticActions": {
-    "deleteSpam": true,
-    "deleteOffensiveMessages": false,
-    "muteRepeatOffenders": true,
-    "notifyAdminsForCriticalViolations": true,
-    "escalationBasedAction": true
-  },
-
-  "adminReports": {
-    "enabled": true,
-    "dailySummary": true,
-    "weeklySummary": true,
-    "includeTopActiveUsers": true,
-    "includeViolations": true,
-    "includeConflictPairs": true,
-    "includeEscalationEvents": true
+    "maxMessagesPerMinute": 10
   },
 
   "aiInstructions": [
-    "Non valutare i messaggi in modo isolato: usa sempre il contesto conversazionale.",
-    "Identifica coppie di utenti in conflitto e analizza la dinamica tra loro.",
-    "Un messaggio offensivo isolato NON è automaticamente una violazione grave.",
-    "Distinguere tra sfogo emotivo e conflitto reale tra utenti.",
-    "Attivare interventi solo quando esiste escalation bidirezionale o ripetuta.",
-    "Dare priorità alla de-escalation rispetto a warning o mute.",
-    "Ridurre falsi positivi anche a costo di tollerare linguaggio colloquiale forte.",
-    "Monitorare la dinamica tra utenti nel tempo (non solo messaggi singoli).",
-    "Riconoscere pattern di flame tra le stesse persone.",
-    "Intervenire progressivamente: soft warning → warning → mute → ban.",
-    "Non abusare di sanzioni automatiche senza conferma del conflitto."
+    "Analizza sempre il contesto prima di decidere una violazione.",
+    "Non basarti su singole parole offensive isolate.",
+    "Espressioni colloquiali o emotive non sono automaticamente violazioni.",
+    "Distingui tra sfogo emotivo e attacco personale reale.",
+    "Se il contesto è ambiguo, scegli sempre l’azione meno invasiva.",
+    "Considera almeno gli ultimi 20 messaggi della conversazione.",
+    "Evita falsi positivi anche a costo di tollerare linguaggio forte.",
+    "Intervieni solo in caso di reale conflitto o escalation."
   ],
 
   "responseFormat": {
     "violation": "boolean",
     "severity": "0-100",
     "confidence": "0-100",
-    "category": "spam|offesa_reale|odio|flood|trolling|sfogo_emotivo|conflitto_attivo|dati_personali|link_pericoloso|fake_news|altro",
-    "action": "none|warning|soft_warning|delete|mute|ban|notify_admin",
-    "reason": "string",
-    "explanation": "string"
+    "category": "none|spam|offesa|odio|flood|trolling|sfogo_emotivo|link_pericoloso|altro",
+    "action": "none|warning|delete|mute|ban",
+    "reason": "string"
   },
 
   "bannedWords": []
