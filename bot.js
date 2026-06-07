@@ -7,14 +7,12 @@ const fs = require('fs');
 const path = require('path');
 
 const CONFIG_PATH = path.join(__dirname, 'config/rules.json');
-
 function loadConfig() {
   return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 }
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 const warningCount = {};
 const LOG_PATH = path.join(__dirname, 'config/violations.log');
 
@@ -27,14 +25,14 @@ function userKey(chatId, userId) {
   return `${chatId}:${userId}`;
 }
 
+// ─── Analisi moderazione ──────────────────────────────────────────────────────
 async function analyzeMessage(text, config) {
   const rulesText = config.rules.map((r, i) => `${i + 1}. ${r}`).join('\n');
   const bannedWords = config.bannedWords.length
-    ? `Parole sempre vietate: ${config.bannedWords.join(', ')}`
-    : '';
+    ? `Parole sempre vietate: ${config.bannedWords.join(', ')}` : '';
   const lang = config.language ? `Lingua permessa: ${config.language}` : '';
 
-  const prompt = `Sei un moderatore AI per un gruppo Telegram. Analizza il messaggio e stabilisci se viola le regole.
+  const prompt = `Sei un moderatore AI per un gruppo Telegram che discute di politica, guerra, attualità, calcio e argomenti sulle donne.
 
 REGOLE:
 ${rulesText}
@@ -43,18 +41,22 @@ ${lang}
 
 MESSAGGIO: "${text}"
 
-Rispondi SOLO con JSON valido, nessun testo extra, nessun markdown:
+Analizza il messaggio e rispondi SOLO con JSON valido, nessun testo extra:
 {
   "violation": true o false,
   "severity": "low" o "medium" o "high",
   "rule_violated": "regola violata breve o null",
   "warning_message": "messaggio di avviso gentile ma fermo in italiano, o null",
-  "suggested_action": "warn" o "mute" o "kick" o "ban"
+  "suggested_action": "warn" o "mute" o "kick" o "ban",
+  "contains_misinformation": true o false,
+  "misinformation_correction": "correzione breve e accurata in italiano o null",
+  "is_question": true o false,
+  "question_answer": "risposta breve alla domanda in italiano o null"
 }`;
 
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 400,
+    max_tokens: 600,
     messages: [{ role: 'user', content: prompt }],
   });
 
@@ -63,6 +65,22 @@ Rispondi SOLO con JSON valido, nessun testo extra, nessun markdown:
   return JSON.parse(responseText);
 }
 
+// ─── Risposta quando taggato ──────────────────────────────────────────────────
+async function respondToMention(text, username) {
+  const prompt = `Sei un assistente di gruppo Telegram esperto di politica, guerra, attualità, calcio e argomenti generali. 
+Rispondi in modo utile, equilibrato e accurato in italiano. Sii conciso (max 3 frasi).
+L'utente ${username} ti ha scritto: "${text}"`;
+
+  const response = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 400,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  return response.content[0].text.trim();
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
 async function muteUser(chatId, userId, minutes = 30) {
   const until = Math.floor(Date.now() / 1000) + minutes * 60;
   await bot.restrictChatMember(chatId, userId, {
@@ -97,6 +115,22 @@ async function notifyAdmins(config, text) {
   }
 }
 
+// ─── Benvenuto nuovi membri ───────────────────────────────────────────────────
+bot.on('new_chat_members', async (msg) => {
+  const chatId = msg.chat.id;
+  const config = loadConfig();
+  for (const member of msg.new_chat_members) {
+    if (member.is_bot) continue;
+    const name = member.first_name;
+    const rules = config.rules.map((r, i) => `${i + 1}. ${r}`).join('\n');
+    await bot.sendMessage(chatId,
+      `👋 Benvenuto/a *${name}*!\n\nQueste sono le regole del gruppo:\n\n${rules}\n\nBuona discussione! 🎉`,
+      { parse_mode: 'Markdown' }
+    );
+  }
+});
+
+// ─── Main message handler ─────────────────────────────────────────────────────
 bot.on('message', async (msg) => {
   console.log('📨 Messaggio ricevuto:', msg.chat.type, msg.text);
   try {
@@ -109,16 +143,54 @@ bot.on('message', async (msg) => {
     if (!userId) return;
 
     const config = loadConfig();
-
     if (config.monitoredGroups.length > 0 && !config.monitoredGroups.includes(chatId)) return;
-    if (config.adminIds.includes(userId)) return;
 
+    // Comandi admin
     if (text.startsWith('/mod') && config.adminIds.includes(userId)) {
       await handleAdminCommand(msg, text, config);
       return;
     }
 
+    // Comando /regole per tutti
+    if (text === '/regole') {
+      const rules = config.rules.map((r, i) => `${i + 1}. ${r}`).join('\n');
+      await bot.sendMessage(chatId, `📋 *Regole del gruppo*\n\n${rules}`, { parse_mode: 'Markdown' });
+      return;
+    }
+
+    // Risponde quando viene taggato
+    const botUsername = '@Nunziatella_bot';
+    if (text.includes(botUsername)) {
+      const cleanText = text.replace(botUsername, '').trim();
+      const username = msg.from.username ? `@${msg.from.username}` : msg.from.first_name;
+      const risposta = await respondToMention(cleanText || 'Ciao!', username);
+      await bot.sendMessage(chatId, `💬 ${risposta}`, { parse_mode: 'Markdown' });
+      return;
+    }
+
+    // Ignora admin per moderazione
+    if (config.adminIds.includes(userId)) return;
+
+    // Analisi AI
     const result = await analyzeMessage(text, config);
+
+    // Correzione disinformazione
+    if (result.contains_misinformation && result.misinformation_correction) {
+      await bot.sendMessage(chatId,
+        `ℹ️ *Attenzione* — questa informazione potrebbe non essere accurata:\n\n${result.misinformation_correction}`,
+        { parse_mode: 'Markdown' }
+      );
+    }
+
+    // Risposta a domande
+    if (result.is_question && result.question_answer && !result.violation) {
+      await bot.sendMessage(chatId,
+        `🤖 ${result.question_answer}`,
+        { parse_mode: 'Markdown' }
+      );
+    }
+
+    // Moderazione violazioni
     if (!result.violation) return;
 
     const key = userKey(chatId, userId);
@@ -166,6 +238,7 @@ bot.on('message', async (msg) => {
   }
 });
 
+// ─── Admin commands ───────────────────────────────────────────────────────────
 async function handleAdminCommand(msg, text, config) {
   const chatId = msg.chat.id;
   const parts = text.split(' ');
