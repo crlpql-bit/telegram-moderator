@@ -1,0 +1,18 @@
+{
+  "monitoredGroups": [],
+  "adminIds": [],
+  "language": "italiano",
+  "maxWarnings": 3,
+  "actionOnMaxWarnings": "mute",
+  "muteDurationMinutes": 30,
+  "deleteViolations": true,
+  "rules": [
+    "Nessun linguaggio offensivo, insulti o parolacce",
+    "Nessun contenuto razzista, sessista o discriminatorio",
+    "Nessuno spam o pubblicità non autorizzata",
+    "Nessun link sospetto o non autorizzato",
+    "Rispetta tutti i membri del gruppo",
+    "Rimani in tema con gli argomenti del gruppo"
+  ],
+  "bannedWords": []
+}
