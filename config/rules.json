@@ -1,18 +1,172 @@
 {
   "monitoredGroups": [],
   "adminIds": [],
+
   "language": "italiano",
+
   "maxWarnings": 100,
   "actionOnMaxWarnings": "mute",
   "muteDurationMinutes": 30,
+
   "deleteViolations": true,
+
   "rules": [
-    "Nessun linguaggio offensivo, insulti o parolacce",
-    "Nessun contenuto razzista, sessista o discriminatorio",
-    "Nessuno spam o pubblicità non autorizzata",
-    "Nessun link sospetto o non autorizzato",
-    "Rispetta tutti i membri del gruppo",
-    "Rimani in tema con gli argomenti del gruppo"
+    "Nessun linguaggio offensivo, insulti o attacchi personali verso altri utenti",
+    "Nessun contenuto razzista, sessista, discriminatorio o che inciti all'odio",
+    "Nessuno spam, pubblicità, promozione o autopromozione non autorizzata",
+    "Nessun link sospetto, phishing, malware o truffe",
+    "Rispetta tutti i membri del gruppo e mantieni toni civili",
+    "Rimani in tema con gli argomenti del gruppo",
+    "Non pubblicare dati personali di altre persone",
+    "Non condividere contenuti illegali o pericolosi",
+    "Non diffondere deliberatamente informazioni false o fuorvianti",
+    "Non molestare, perseguitare o provocare sistematicamente altri utenti"
   ],
+
+  "moderationFeatures": {
+    "contextAnalysis": true,
+    "antiSpam": true,
+    "antiFlood": true,
+    "antiTrolling": true,
+    "toxicityDetection": true,
+    "hateSpeechDetection": true,
+    "personalDataProtection": true,
+    "linkReputationCheck": true,
+    "fakeNewsDetection": true,
+    "newUserProtection": true,
+    "conversationMonitoring": true,
+    "conflictDetection": true
+  },
+
+  "floodProtection": {
+    "enabled": true,
+    "maxMessagesPerMinute": 10,
+    "maxRepeatedMessages": 3,
+    "temporaryMuteMinutes": 10
+  },
+
+  "spamDetection": {
+    "enabled": true,
+    "duplicateMessageThreshold": 3,
+    "maxLinksPerMessage": 3,
+    "maxMentionsPerMessage": 5
+  },
+
+  "toxicityThresholds": {
+    "warning": 60,
+    "delete": 75,
+    "mute": 85,
+    "ban": 95
+  },
+
+  "warningEscalation": {
+    "minorViolation": 1,
+    "mediumViolation": 2,
+    "seriousViolation": 3
+  },
+
+  "userReputation": {
+    "enabled": true,
+    "startingScore": 100,
+    "warningPenalty": 10,
+    "mutePenalty": 25,
+    "banPenalty": 100,
+    "positiveParticipationBonus": 2
+  },
+
+  "automaticActions": {
+    "deleteSpam": true,
+    "deleteOffensiveMessages": true,
+    "muteRepeatOffenders": true,
+    "notifyAdminsForCriticalViolations": true
+  },
+
+  "adminReports": {
+    "enabled": true,
+    "dailySummary": true,
+    "weeklySummary": true,
+    "includeTopActiveUsers": true,
+    "includeViolations": true,
+    "includeMutedUsers": true,
+    "includeTrendingTopics": true
+  },
+
+  "commands": {
+    "/regole": "Mostra le regole del gruppo",
+    "/riassunto": "Genera un riassunto delle ultime discussioni",
+    "/faq": "Risponde alle domande frequenti",
+    "/statistiche": "Mostra statistiche del gruppo",
+    "/segnala": "Segnala un messaggio agli amministratori",
+    "/perche": "Spiega una decisione di moderazione",
+    "/help": "Mostra tutti i comandi disponibili"
+  },
+
+  "emotionalAnalysis": {
+    "enabled": true,
+    "detectFrustration": true,
+    "detectAnger": true,
+    "detectAggressiveness": true,
+    "detectEscalation": true,
+    "suggestCalmingResponses": true
+  },
+
+  "deEscalation": {
+    "enabled": true,
+    "beforeMute": true,
+    "sendPrivateSuggestion": true,
+    "maxSuggestionsPerDay": 3
+  },
+
+  "calmingMessages": [
+    "Il tono del messaggio sembra piuttosto acceso. Prova a esprimere il tuo punto di vista senza attacchi personali.",
+    "Le discussioni più efficaci sono quelle che si concentrano sulle idee e non sulle persone.",
+    "Se il tema ti sta irritando, può essere utile prenderti qualche minuto prima di rispondere.",
+    "Prova a spiegare il tuo disaccordo in modo costruttivo: sarà più facile per gli altri comprendere il tuo punto di vista.",
+    "Ricorda che dietro ogni messaggio c'è una persona. Manteniamo la conversazione rispettosa.",
+    "La discussione sta diventando molto accesa. Cerchiamo di riportarla su toni civili."
+  ],
+
+  "wellbeingSuggestions": [
+    "Forse è il momento di fare una breve pausa e tornare alla discussione più tardi.",
+    "Una passeggiata di qualche minuto può aiutare a schiarire le idee prima di rispondere.",
+    "Prendersi un momento per rileggere il messaggio prima di inviarlo può evitare incomprensioni.",
+    "Quando una discussione diventa frustrante, spesso è più efficace concentrarsi sui fatti piuttosto che sulle emozioni.",
+    "Se la giornata è stata difficile, può essere utile allontanarsi un attimo dallo schermo prima di continuare la conversazione."
+  ],
+
+  "aiInstructions": [
+    "Analizza sempre il contesto degli ultimi 20 messaggi prima di prendere una decisione.",
+    "Distingui tra discussione civile, ironia, satira e attacco personale.",
+    "Evita falsi positivi quando parole offensive vengono utilizzate a scopo descrittivo o informativo.",
+    "Valuta ogni messaggio assegnando punteggi separati per tossicità, spam, trolling, odio e rischio.",
+    "Applica sanzioni proporzionate alla gravità della violazione.",
+    "Segnala agli amministratori i casi dubbi invece di agire automaticamente.",
+    "Identifica comportamenti provocatori ripetuti anche in assenza di insulti espliciti.",
+    "Proteggi nuovi utenti da molestie, attacchi coordinati o bullismo.",
+    "Quando possibile avvisa l'utente prima di applicare sanzioni severe.",
+    "Genera spiegazioni brevi e trasparenti per ogni azione intrapresa.",
+    "Considera la cronologia e la reputazione dell'utente prima di decidere.",
+    "Non penalizzare opinioni espresse in modo civile anche se controverse.",
+    "Rileva tentativi di manipolazione, truffa, phishing e ingegneria sociale.",
+    "Intervieni preventivamente quando una discussione mostra segnali evidenti di escalation.",
+    "Mantieni neutralità politica, religiosa e ideologica.",
+    "Analizza il tono emotivo del messaggio senza formulare diagnosi psicologiche.",
+    "Se rilevi rabbia, frustrazione o forte aggressività, considera un intervento di de-escalation prima di applicare sanzioni.",
+    "Non affermare mai che un utente soffre di problemi psicologici o emotivi.",
+    "Suggerisci comportamenti costruttivi e rispettosi quando una discussione si sta deteriorando.",
+    "Invita gli utenti a riformulare messaggi aggressivi in modo più civile.",
+    "Quando appropriato, incoraggia una pausa dalla discussione e il ritorno a un confronto rispettoso."
+  ],
+
+  "responseFormat": {
+    "violation": "boolean",
+    "severity": "0-100",
+    "confidence": "0-100",
+    "category": "spam|offesa|odio|flood|trolling|dati_personali|link_pericoloso|fake_news|altro",
+    "action": "none|warning|delete|mute|ban|notify_admin",
+    "reason": "string",
+    "explanation": "string"
+  },
+
   "bannedWords": []
 }
