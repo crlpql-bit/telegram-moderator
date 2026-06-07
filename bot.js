@@ -1,4 +1,6 @@
 require('dotenv').config();
+const http = require('http');
+http.createServer((req, res) => res.end('Bot attivo!')).listen(process.env.PORT || 3000);
 const TelegramBot = require('node-telegram-bot-api');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
