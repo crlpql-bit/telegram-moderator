@@ -2,7 +2,7 @@ require('dotenv').config();
 const http = require('http');
 http.createServer((req, res) => res.end('Bot attivo!')).listen(process.env.PORT || 3000);
 const TelegramBot = require('node-telegram-bot-api');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Anthropic = require('@anthropic-ai/sdk');
 const fs = require('fs');
 const path = require('path');
 
@@ -13,8 +13,7 @@ function loadConfig() {
 }
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const warningCount = {};
 const LOG_PATH = path.join(__dirname, 'config/violations.log');
@@ -53,8 +52,13 @@ Rispondi SOLO con JSON valido, nessun testo extra, nessun markdown:
   "suggested_action": "warn" o "mute" o "kick" o "ban"
 }`;
 
-  const result = await model.generateContent(prompt);
-  let responseText = result.response.text().trim();
+  const response = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 400,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  let responseText = response.content[0].text.trim();
   responseText = responseText.replace(/```json|```/g, '').trim();
   return JSON.parse(responseText);
 }
@@ -187,4 +191,4 @@ async function handleAdminCommand(msg, text, config) {
   }
 }
 
-console.log('🤖 Moderatore Telegram attivo con Gemini!');
+console.log('🤖 Moderatore Telegram attivo con Claude!');
