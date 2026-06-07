@@ -6,19 +6,16 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 const path = require('path');
 
-// ─── Config ───────────────────────────────────────────────────────────────────
 const CONFIG_PATH = path.join(__dirname, 'config/rules.json');
 
 function loadConfig() {
   return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 }
 
-// ─── Clients ──────────────────────────────────────────────────────────────────
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-// ─── State ────────────────────────────────────────────────────────────────────
 const warningCount = {};
 const LOG_PATH = path.join(__dirname, 'config/violations.log');
 
@@ -31,7 +28,6 @@ function userKey(chatId, userId) {
   return `${chatId}:${userId}`;
 }
 
-// ─── AI Moderation ────────────────────────────────────────────────────────────
 async function analyzeMessage(text, config) {
   const rulesText = config.rules.map((r, i) => `${i + 1}. ${r}`).join('\n');
   const bannedWords = config.bannedWords.length
@@ -63,7 +59,6 @@ Rispondi SOLO con JSON valido, nessun testo extra, nessun markdown:
   return JSON.parse(responseText);
 }
 
-// ─── Actions ──────────────────────────────────────────────────────────────────
 async function muteUser(chatId, userId, minutes = 30) {
   const until = Math.floor(Date.now() / 1000) + minutes * 60;
   await bot.restrictChatMember(chatId, userId, {
@@ -98,8 +93,8 @@ async function notifyAdmins(config, text) {
   }
 }
 
-// ─── Main message handler ─────────────────────────────────────────────────────
 bot.on('message', async (msg) => {
+  console.log('📨 Messaggio ricevuto:', msg.chat.type, msg.text);
   try {
     const chatId = msg.chat.id;
     const userId = msg.from?.id;
@@ -167,7 +162,6 @@ bot.on('message', async (msg) => {
   }
 });
 
-// ─── Admin commands ───────────────────────────────────────────────────────────
 async function handleAdminCommand(msg, text, config) {
   const chatId = msg.chat.id;
   const parts = text.split(' ');
