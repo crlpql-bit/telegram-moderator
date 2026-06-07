@@ -2,7 +2,7 @@
   "monitoredGroups": [],
   "adminIds": [],
   "language": "italiano",
-  "maxWarnings": 3,
+  "maxWarnings": 100,
   "actionOnMaxWarnings": "mute",
   "muteDurationMinutes": 30,
   "deleteViolations": true,
