@@ -47,7 +47,7 @@ Analizza il messaggio e rispondi SOLO con JSON valido, nessun testo extra:
   "severity": "low" o "medium" o "high",
   "rule_violated": "regola violata breve o null",
   "warning_message": "messaggio di avviso in tono informale e diretto, come lo direbbe un amico, in italiano, o null",
-  "suggested_action": "warn" o "mute" o "kick" o "ban",
+  "suggested_action": "warn"
   "contains_misinformation": true o false,
   "misinformation_correction": "correzione breve e accurata in italiano o null",
   "is_question": true o false,
