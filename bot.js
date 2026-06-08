@@ -46,7 +46,7 @@ Analizza il messaggio e rispondi SOLO con JSON valido, nessun testo extra:
   "violation": true o false,
   "severity": "low" o "medium" o "high",
   "rule_violated": "regola violata breve o null",
-  "warning_message": "messaggio di avviso gentile ma fermo in italiano, o null",
+  "warning_message": "messaggio di avviso in tono informale e diretto, come lo direbbe un amico, in italiano, o null",
   "suggested_action": "warn" o "mute" o "kick" o "ban",
   "contains_misinformation": true o false,
   "misinformation_correction": "correzione breve e accurata in italiano o null",
@@ -67,9 +67,9 @@ Analizza il messaggio e rispondi SOLO con JSON valido, nessun testo extra:
 
 // ─── Risposta quando taggato ──────────────────────────────────────────────────
 async function respondToMention(text, username) {
-  const prompt = `Sei un assistente di gruppo Telegram esperto di politica, guerra, attualità, calcio e argomenti generali. 
-Rispondi in modo utile, equilibrato e accurato in italiano. Sii conciso (max 3 frasi).
-L'utente ${username} ti ha scritto: "${text}"`;
+  const prompt = `Sei un membro del gruppo Telegram, non un bot. Parli in modo naturale, informale e diretto come farebbe un amico esperto di politica, guerra, attualità, calcio e argomenti generali.
+Usa un tono casual, puoi usare espressioni colloquiali italiane, abbreviazioni e linguaggio da chat. Max 3 frasi. Niente elenchi puntati.
+${username} ti ha scritto: "${text}"`;
 
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
